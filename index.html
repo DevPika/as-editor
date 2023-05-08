@@ -245,6 +245,11 @@
   <div id="options" class="popup">
     <div class="columns">
       <div class="column">
+        <h5>Project details</h5>
+        <div class="option">
+          <p><input id="option-title" type="text" placeholder="Project title" /></p>
+          <p><input id="option-desc" type="text" placeholder="Project description" /></p>
+        </div>
         <h5>Optimize</h5>
         <div class="option">
           <p>
@@ -390,6 +395,9 @@
     const playFrame = document.getElementById('play-frame')
     const optionsPopup = document.getElementById('options')
     const clipboardPopup = document.getElementById('clipboard')
+
+    const optionProjectTitle = document.getElementById('option-title')
+    const optionProjectDesc = document.getElementById('option-desc')
 
     const optionOptimizeSpeed = document.getElementById('option-optimize-speed')
     const optionOptimizeSize = document.getElementById('option-optimize-size')
@@ -816,8 +824,51 @@
             },
             body: JSON.stringify(params), // body data type must match "Content-Type" header
           });
+          if (!response.ok) {
+            console.error("Error: Connection with GitLab failed");
+            return;
+          }
           // TODO Use received accessToken and refreshToken instead of logging in again
-          console.log(await response.json());
+          const { access_token, refresh_token } = await response.json();
+          console.log(access_token, refresh_token);
+
+          let projectTitleValue = optionProjectTitle.value.trim();
+          if (!projectTitleValue.length) projectTitleValue = "AssemblyScript snippet";
+
+          let projectDescValue = optionProjectDesc.value.trim();
+          if (!projectDescValue.length) projectDescValue = "Created using a customized editor";
+
+          const snippetsEndpoint = "https://gitlab.com/api/v4/snippets";
+          const snippetParams = {
+            "title": projectTitleValue,
+            "description": projectDescValue,
+            "visibility": "private", // TODO Make radio
+            "files": [
+              {
+                "content": htmlEditor.getValue().trim(), // TODO Check if empty
+                "file_path": "index.html"
+              },
+              {
+                "content": sourceEditor.getValue().trim(), // TODO Check if empty
+                "file_path": "module.ts"
+              },
+              {
+                "content": readmeEditor.getValue().trim(), // TODO Check if empty
+                "file_path": "README.md"
+              },
+            ]
+          };
+          const snippetResponse = await fetch(snippetsEndpoint, {
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${access_token}`
+            },
+            body: JSON.stringify(snippetParams)
+          });
+          console.log(await snippetResponse.json());
         }
       })
 
