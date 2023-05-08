@@ -151,6 +151,10 @@
       font-size: 0.8rem;
       user-select: none;
     }
+    .popup a {
+      color: #aaa;
+      text-decoration: underline;
+    }
     .popup:before {
       content: "";
       position: absolute;
@@ -242,14 +246,12 @@
     <a class="button share" title="Copy shareable Link">🔗</a>
     <a class="button options" title="Compiler Options">⚙️</a>
   </div>
+  <div id="sharing-options" class="popup">
+    
+  </div>
   <div id="options" class="popup">
     <div class="columns">
       <div class="column">
-        <h5>Project details</h5>
-        <div class="option">
-          <p><input id="option-title" type="text" placeholder="Project title" /></p>
-          <p><input id="option-desc" type="text" placeholder="Project description" /></p>
-        </div>
         <h5>Optimize</h5>
         <div class="option">
           <p>
@@ -305,7 +307,35 @@
     </div>
   </div>
   <div id="clipboard" class="popup">
-    Shareable link copied to clipboard.
+    <div class="columns">
+      <div class="column">
+        <h5>Snippet details</h5>
+        <div class="option">
+          <p><input id="option-title" type="text" placeholder="Snippet Title" /></p>
+          <p><input id="option-desc" type="text" placeholder="Snippet Description" /></p>
+          <h6>Snippet visibility</h6>
+          <p>
+            <input type="radio" name="option-sharing" id="option-sharing-private" checked /><label for="option-sharing-private"> Private</label>
+            <input type="radio" name="option-sharing" id="option-sharing-public" /><label for="option-sharing-public"> Public</label>
+          </p>
+          <p>
+            <input id="option-create-snippet"type="button" value="Create snippet" />
+            <input id="option-update-snippet"type="button" value="Update snippet" />
+          </p>
+          <p id="option-url-container" style="display: none;">
+            <p>Snippet created at:<p>
+            <a id="option-url" href="" target="_blank" rel="noopener noreferrer"></a>
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <h5>Load from snippet</h5>
+        <div class="option">
+          <p><input id="option-load-url" type="text" placeholder="Enter snippet url here" /></p>
+          <p><input id="option-load"type="button" value="Load snippet" /></p>
+        </div>
+      </div>
+    </div>
   </div>
   <div id="tabs">
     <a id="readmeTab" class="tab readme active" title="README"><span>README.md</span></a>
@@ -398,6 +428,10 @@
 
     const optionProjectTitle = document.getElementById('option-title')
     const optionProjectDesc = document.getElementById('option-desc')
+    const optionVisibilityPrivate = document.getElementById('option-sharing-private')
+    const optionVisibilityPublic = document.getElementById('option-sharing-public')
+    const optionUrlContainer = document.getElementById('option-url-container')
+    const optionUrl = document.getElementById('option-url')
 
     const optionOptimizeSpeed = document.getElementById('option-optimize-speed')
     const optionOptimizeSize = document.getElementById('option-optimize-size')
@@ -638,13 +672,30 @@
           optionsPopup.style.display = 'none'
         }
       }
+
+      // Make sharing options clickable
+      let sharingVisible = false
+      function toggleSharingPopup(evt) {
+        if (sharingVisible = !sharingVisible) {
+          clipboardPopup.style.display = 'block'
+          const bounds = evt.target.getBoundingClientRect()
+          clipboardPopup.style.top = (bounds.y + bounds.height + 12) + 'px'
+          clipboardPopup.style.right = (window.innerWidth - (bounds.x + bounds.width / 2) - 24) + 'px'
+        } else {
+          clipboardPopup.style.display = 'none'
+        }
+      }
+
       document.querySelector('.button.options').addEventListener('click', toggleOptions)
+      document.querySelector('.button.share').addEventListener('click', toggleSharingPopup)
       document.querySelector('#tabs').addEventListener('click', () => {
         if (optionsVisible) toggleOptions(null)
+        if (sharingVisible) toggleSharingPopup(null)
       })
       Array.prototype.slice.call(document.querySelectorAll('.pane'))
         .map(pane => pane.addEventListener('click', () => {
           if (optionsVisible) toggleOptions(null)
+          if (sharingVisible) toggleSharingPopup(null)
         }))
 
       // --zeroFilledMemory depends on --importMemory
@@ -747,7 +798,7 @@
 
       // Make contents shareable
       let clipboardTimer = null
-      document.querySelector('.button.share').addEventListener('click', async (evt) => {
+      document.getElementById('option-create-snippet').addEventListener('click', async (evt) => {
         const client_id = "7461d8a5e456c5c82ff92d519faef2072680cfb0ccc3491967c5eabe936c3f8c";
         const redirect_uri = "http://localhost:8080";
         const state = "clipboard";
@@ -838,11 +889,18 @@
           let projectDescValue = optionProjectDesc.value.trim();
           if (!projectDescValue.length) projectDescValue = "Created using a customized editor";
 
+          let projectVisibilityValue;
+          if (optionVisibilityPrivate.checked) {
+            projectVisibilityValue = "private";
+          } else {
+            projectVisibilityValue = "public";
+          }
+
           const snippetsEndpoint = "https://gitlab.com/api/v4/snippets";
           const snippetParams = {
             "title": projectTitleValue,
             "description": projectDescValue,
-            "visibility": "private", // TODO Make radio
+            "visibility": projectVisibilityValue,
             "files": [
               {
                 "content": htmlEditor.getValue().trim(), // TODO Check if empty
@@ -868,7 +926,11 @@
             },
             body: JSON.stringify(snippetParams)
           });
-          console.log(await snippetResponse.json());
+          if (!snippetResponse.ok)
+            console.error("Error: Snippet creation failed");
+          const { web_url } = await snippetResponse.json();
+          optionUrlContainer.style.display = 'block';
+          optionUrl.innerText = optionUrl.href = web_url;
         }
       })
 
