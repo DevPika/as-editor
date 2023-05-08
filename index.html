@@ -90,6 +90,7 @@
     #tabs .tab.disabled {
       display: none;
     }
+    /* TODO Change icon */
     #tabs .tab.readme {
       background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHRpdGxlPmZpbGVfdHlwZV90eXBlc2NyaXB0X29mZmljaWFsPC90aXRsZT48cG9seWdvbiBwb2ludHM9IjIgMTYgMiAzMCAxNiAzMCAzMCAzMCAzMCAxNiAzMCAyIDE2IDIgMiAyIDIgMTYiIHN0eWxlPSJmaWxsOiMwMDdhY2MiLz48cGF0aCBkPSJNMjQuNTY0LDE0Ljg4NGEzLjQ4NSwzLjQ4NSwwLDAsMSwxLjc1MSwxLjAwOSw0LjYxMSw0LjYxMSwwLDAsMSwuNjcxLjljLjAwOS4wMzYtMS4yMDkuODUzLTEuOTQ3LDEuMzExLS4wMjcuMDE4LS4xMzMtLjEtLjI1My0uMjc2YTEuNTg3LDEuNTg3LDAsMCwwLTEuMzE2LS43OTFjLS44NDktLjA1OC0xLjQuMzg3LTEuMzkxLDEuMTI5YTEuMDI3LDEuMDI3LDAsMCwwLC4xMi41MjRjLjE4Ny4zODcuNTMzLjYxOCwxLjYyMiwxLjA4OSwyLC44NjIsMi44NjIsMS40MzEsMy40LDIuMjRhNC4wNjMsNC4wNjMsMCwwLDEsLjMyNCwzLjQxMywzLjc1MywzLjc1MywwLDAsMS0zLjEsMi4yMTgsOC41ODQsOC41ODQsMCwwLDEtMi4xMzMtLjAyMiw1LjE0NSw1LjE0NSwwLDAsMS0yLjg0OS0xLjQ4NCw0Ljk0Nyw0Ljk0NywwLDAsMS0uNzI5LTEuMDgsMi4wOTIsMi4wOTIsMCwwLDEsLjI1OC0uMTY0Yy4xMjQtLjA3MS42LS4zNDIsMS4wNC0uNmwuOC0uNDY3TDIxLDI0LjA4QTMuNzU5LDMuNzU5LDAsMCwwLDIyLjA2NywyNS4xYTIuNiwyLjYsMCwwLDAsMi43MjQtLjEzOCwxLjIxNywxLjIxNywwLDAsMCwuMTU2LTEuNTUxYy0uMjE4LS4zMTEtLjY2Mi0uNTczLTEuOTI0LTEuMTJhNi45Myw2LjkzLDAsMCwxLTIuNjM2LTEuNjIyLDMuNjkyLDMuNjkyLDAsMCwxLS43NjktMS40LDUuNjA2LDUuNjA2LDAsMCwxLS4wNDktMS43ODcsMy40MTMsMy40MTMsMCwwLDEsMi44NzEtMi42NThBNy4wOTIsNy4wOTIsMCwwLDEsMjQuNTY0LDE0Ljg4NFptLTYuNTczLDEuMTY5TDE4LDE3LjJIMTQuMzU2VjI3LjU1NkgxMS43NzhWMTcuMkg4LjEzM1YxNi4wNzZhMTEuMDE4LDExLjAxOCwwLDAsMSwuMDMxLTEuMTU2Yy4wMTMtLjAxOCwyLjIzMS0uMDI3LDQuOTItLjAyMmw0Ljg5My4wMTNaIiBzdHlsZT0iZmlsbDojZmZmIi8+PC9zdmc+');
     }
@@ -149,6 +150,10 @@
       display: none;
       font-size: 0.8rem;
       user-select: none;
+    }
+    .popup a {
+      color: #aaa;
+      text-decoration: underline;
     }
     .popup:before {
       content: "";
@@ -230,6 +235,7 @@
     }
   </style>
 </head>
+
 <body>
   <div id="header">
     <h1>AssemblyScript Editor</h1>
@@ -239,6 +245,9 @@
   <div id="buttons">
     <a class="button share" title="Copy shareable Link">🔗</a>
     <a class="button options" title="Compiler Options">⚙️</a>
+  </div>
+  <div id="sharing-options" class="popup">
+    
   </div>
   <div id="options" class="popup">
     <div class="columns">
@@ -298,7 +307,35 @@
     </div>
   </div>
   <div id="clipboard" class="popup">
-    Shareable link copied to clipboard.
+    <div class="columns">
+      <div class="column">
+        <h5>Snippet details</h5>
+        <div class="option">
+          <p><input id="option-title" type="text" placeholder="Snippet Title" /></p>
+          <p><input id="option-desc" type="text" placeholder="Snippet Description" /></p>
+          <h6>Snippet visibility</h6>
+          <p>
+            <input type="radio" name="option-sharing" id="option-sharing-private" checked /><label for="option-sharing-private"> Private</label>
+            <input type="radio" name="option-sharing" id="option-sharing-public" /><label for="option-sharing-public"> Public</label>
+          </p>
+          <p>
+            <input id="option-create-snippet"type="button" value="Create snippet" />
+            <input id="option-update-snippet"type="button" value="Update snippet" />
+          </p>
+          <p id="option-url-container" style="display: none;">
+            <p>Snippet created at:<p>
+            <a id="option-url" href="" target="_blank" rel="noopener noreferrer"></a>
+          </p>
+        </div>
+      </div>
+      <div class="column">
+        <h5>Load from snippet</h5>
+        <div class="option">
+          <p><input id="option-load-url" type="text" placeholder="Enter snippet url here" /></p>
+          <p><input id="option-load"type="button" value="Load snippet" /></p>
+        </div>
+      </div>
+    </div>
   </div>
   <div id="tabs">
     <a id="readmeTab" class="tab readme active" title="README"><span>README.md</span></a>
@@ -388,6 +425,13 @@
     const playFrame = document.getElementById('play-frame')
     const optionsPopup = document.getElementById('options')
     const clipboardPopup = document.getElementById('clipboard')
+
+    const optionProjectTitle = document.getElementById('option-title')
+    const optionProjectDesc = document.getElementById('option-desc')
+    const optionVisibilityPrivate = document.getElementById('option-sharing-private')
+    const optionVisibilityPublic = document.getElementById('option-sharing-public')
+    const optionUrlContainer = document.getElementById('option-url-container')
+    const optionUrl = document.getElementById('option-url')
 
     const optionOptimizeSpeed = document.getElementById('option-optimize-speed')
     const optionOptimizeSize = document.getElementById('option-optimize-size')
@@ -628,13 +672,30 @@
           optionsPopup.style.display = 'none'
         }
       }
+
+      // Make sharing options clickable
+      let sharingVisible = false
+      function toggleSharingPopup(evt) {
+        if (sharingVisible = !sharingVisible) {
+          clipboardPopup.style.display = 'block'
+          const bounds = evt.target.getBoundingClientRect()
+          clipboardPopup.style.top = (bounds.y + bounds.height + 12) + 'px'
+          clipboardPopup.style.right = (window.innerWidth - (bounds.x + bounds.width / 2) - 24) + 'px'
+        } else {
+          clipboardPopup.style.display = 'none'
+        }
+      }
+
       document.querySelector('.button.options').addEventListener('click', toggleOptions)
+      document.querySelector('.button.share').addEventListener('click', toggleSharingPopup)
       document.querySelector('#tabs').addEventListener('click', () => {
         if (optionsVisible) toggleOptions(null)
+        if (sharingVisible) toggleSharingPopup(null)
       })
       Array.prototype.slice.call(document.querySelectorAll('.pane'))
         .map(pane => pane.addEventListener('click', () => {
           if (optionsVisible) toggleOptions(null)
+          if (sharingVisible) toggleSharingPopup(null)
         }))
 
       // --zeroFilledMemory depends on --importMemory
@@ -663,35 +724,214 @@
         binaryTabElement.innerHTML = useWast ? 'module.wast' : 'module.wat'
       })
 
-      // TODO Integrate with Github Gists
+      // TODO use subtle.crypto or some UUID lib
+      function makeid(length) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+          counter += 1;
+        }
+        return result;
+      }
+
+      async function digestMessage(message) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(message);
+        const hash = await crypto.subtle.digest("SHA-256", data);
+        return hash;
+      }
+
+      function base64ArrayBuffer(arrayBuffer) {
+        var base64 = ''
+        var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+        var bytes = new Uint8Array(arrayBuffer)
+        var byteLength = bytes.byteLength
+        var byteRemainder = byteLength % 3
+        var mainLength = byteLength - byteRemainder
+
+        var a, b, c, d
+        var chunk
+
+        // Main loop deals with bytes in chunks of 3
+        for (var i = 0; i < mainLength; i = i + 3) {
+          // Combine the three bytes into a single integer
+          chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
+
+          // Use bitmasks to extract 6-bit segments from the triplet
+          a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
+          b = (chunk & 258048) >> 12 // 258048   = (2^6 - 1) << 12
+          c = (chunk & 4032) >> 6 // 4032     = (2^6 - 1) << 6
+          d = chunk & 63               // 63       = 2^6 - 1
+
+          // Convert the raw binary segments to the appropriate ASCII encoding
+          base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
+        }
+
+        // Deal with the remaining bytes and padding
+        if (byteRemainder == 1) {
+          chunk = bytes[mainLength]
+
+          a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
+
+          // Set the 4 least significant bits to zero
+          b = (chunk & 3) << 4 // 3   = 2^2 - 1
+
+          base64 += encodings[a] + encodings[b] + '=='
+        } else if (byteRemainder == 2) {
+          chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
+
+          a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
+          b = (chunk & 1008) >> 4 // 1008  = (2^6 - 1) << 4
+
+          // Set the 2 least significant bits to zero
+          c = (chunk & 15) << 2 // 15    = 2^4 - 1
+
+          base64 += encodings[a] + encodings[b] + encodings[c] + '='
+        }
+
+        return base64
+      }
+
       // Make contents shareable
       let clipboardTimer = null
-      document.querySelector('.button.share').addEventListener('click', evt => {
-        const helper = document.getElementById('clipboardHelper')
-        // TODO Integrate with README
-        const serial = btoa([
-          '#!', serializeCompilerOptions(), '\n',
-          sourceEditor.getValue().trim(),
-          '\n#!html\n',
-          htmlEditor.getValue().trim()
-        ].join(''))
-        document.location.hash = serial
-        helper.value = document.location
-        helper.select()
-        document.execCommand('copy')
-        helper.value = ''
-        helper.focus()
-        clipboardPopup.style.display = 'block'
-        const button = evt.target
-        button.setAttribute('href', document.location)
-        const bounds = button.getBoundingClientRect()
-        clipboardPopup.style.top = (bounds.y + bounds.height + 12) + 'px'
-        clipboardPopup.style.right = (window.innerWidth - (bounds.x + bounds.width / 2) - 12) + 'px'
-        if (clipboardTimer) clearTimeout(clipboardTimer)
-        clipboardTimer = setTimeout(() => {
-          clipboardPopup.style.display = 'none'
-          clipboardTimer = null
-        }, 3000)
+      document.getElementById('option-create-snippet').addEventListener('click', async (evt) => {
+        const client_id = "7461d8a5e456c5c82ff92d519faef2072680cfb0ccc3491967c5eabe936c3f8c";
+        const redirect_uri = "https://devpika.github.io/as-editor";
+        const state = "clipboard";
+        const scope = "api";
+        const restored_code_verifier = sessionStorage.getItem("code_verifier");
+        // TODO Can use state variable instead of checking sessionStorage to decide state?
+        if (!restored_code_verifier) {
+          // The CODE_VERIFIER is a random string, between 43 and 128 characters in length, which use the characters A-Z, a-z, 0-9, -, ., _, and ~.
+          const code_verifier = makeid(48);
+          // Save data to sessionStorage
+          sessionStorage.setItem("code_verifier", code_verifier);
+          const digestBuffer = await digestMessage(code_verifier);
+
+          // The CODE_CHALLENGE is an URL-safe base64-encoded string of the SHA256 hash of the CODE_VERIFIER. The SHA256 hash must be in binary format before encoding.
+          // TODO Test both variants below
+          // const code_challenge = btoa(String.fromCharCode(...new Uint8Array(digestBuffer)));
+          // console.log(code_challenge);
+          let code_challenge = base64ArrayBuffer(digestBuffer);
+          code_challenge = code_challenge.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+
+          // Redirect to GitLab for authorization
+          window.location.href = `https://gitlab.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&state=${state}&scope=${scope}&code_challenge=${code_challenge}&code_challenge_method=S256`;
+
+          const helper = document.getElementById('clipboardHelper')
+          const serial = btoa([
+            '#!', serializeCompilerOptions(), '\n',
+            sourceEditor.getValue().trim(),
+            '\n#!html\n',
+            htmlEditor.getValue().trim()
+          ].join(''))
+          document.location.hash = serial
+          helper.value = document.location
+          helper.select()
+          document.execCommand('copy')
+          helper.value = ''
+          helper.focus()
+          clipboardPopup.style.display = 'block'
+          const button = evt.target
+          button.setAttribute('href', document.location)
+          const bounds = button.getBoundingClientRect()
+          clipboardPopup.style.top = (bounds.y + bounds.height + 12) + 'px'
+          clipboardPopup.style.right = (window.innerWidth - (bounds.x + bounds.width / 2) - 12) + 'px'
+          if (clipboardTimer) clearTimeout(clipboardTimer)
+          clipboardTimer = setTimeout(() => {
+            clipboardPopup.style.display = 'none'
+            clipboardTimer = null
+          }, 3000)
+        }
+        else { // Returned from auth page
+          // Cleanup sessionStorage
+          window.sessionStorage.removeItem("code_verifier");
+          const url = "https://gitlab.com/oauth/token";
+          const paramsString = window.location.search;
+          const searchParams = new URLSearchParams(paramsString);
+          let returned_code = "";
+          if (!searchParams.has("code")) {
+            console.error("Error: No code returned from OAuth!");
+            return;
+          }
+          returned_code = searchParams.get("code");
+          const params = {
+            client_id: client_id,
+            code: returned_code,
+            grant_type: "authorization_code",
+            redirect_uri: redirect_uri,
+            code_verifier: restored_code_verifier
+          };
+          const response = await fetch(url, {
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(params), // body data type must match "Content-Type" header
+          });
+          if (!response.ok) {
+            console.error("Error: Connection with GitLab failed");
+            return;
+          }
+          // TODO Use received accessToken and refreshToken instead of logging in again
+          const { access_token, refresh_token } = await response.json();
+          console.log(access_token, refresh_token);
+
+          let projectTitleValue = optionProjectTitle.value.trim();
+          if (!projectTitleValue.length) projectTitleValue = "AssemblyScript snippet";
+
+          let projectDescValue = optionProjectDesc.value.trim();
+          if (!projectDescValue.length) projectDescValue = "Created using a customized editor";
+
+          let projectVisibilityValue;
+          if (optionVisibilityPrivate.checked) {
+            projectVisibilityValue = "private";
+          } else {
+            projectVisibilityValue = "public";
+          }
+
+          const snippetsEndpoint = "https://gitlab.com/api/v4/snippets";
+          const snippetParams = {
+            "title": projectTitleValue,
+            "description": projectDescValue,
+            "visibility": projectVisibilityValue,
+            "files": [
+              {
+                "content": htmlEditor.getValue().trim(), // TODO Check if empty
+                "file_path": "index.html"
+              },
+              {
+                "content": sourceEditor.getValue().trim(), // TODO Check if empty
+                "file_path": "module.ts"
+              },
+              {
+                "content": readmeEditor.getValue().trim(), // TODO Check if empty
+                "file_path": "README.md"
+              },
+            ]
+          };
+          const snippetResponse = await fetch(snippetsEndpoint, {
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${access_token}`
+            },
+            body: JSON.stringify(snippetParams)
+          });
+          if (!snippetResponse.ok)
+            console.error("Error: Snippet creation failed");
+          const { web_url } = await snippetResponse.json();
+          optionUrlContainer.style.display = 'block';
+          optionUrl.innerText = optionUrl.href = web_url;
+        }
       })
 
       function deserializeCompilerOptions(query) {
@@ -877,7 +1117,7 @@
         const options = [
           tsModule,
           '--textFile', textModule,
-          '--outFile',  wasmModule,
+          '--outFile', wasmModule,
           '--bindings', 'raw',
           ...getCompilerOptions()
         ]
@@ -892,7 +1132,7 @@
           } else {
             module_wast = outputs[textModule]
             module_wasm = outputs[wasmModule]
-            module_js   = outputs[jsModule]
+            module_js = outputs[jsModule]
             binaryEditor.setValue(output + module_wast)
           }
           didCompile = true
@@ -905,4 +1145,5 @@
     })
   </script>
 </body>
+
 </html>
