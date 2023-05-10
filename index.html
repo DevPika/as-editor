@@ -796,6 +796,23 @@
         return base64
       }
 
+      const keyPrefix = "as-editor-";
+      function saveToLocalStorage() {
+        console.log("saved!");
+        localStorage.setItem(keyPrefix + "readme", readmeEditor.getValue().trim());
+        localStorage.setItem(keyPrefix + "source", sourceEditor.getValue().trim());
+        localStorage.setItem(keyPrefix + "html", htmlEditor.getValue().trim());
+      }
+      setInterval(() => {
+          saveToLocalStorage();
+        }, 10000);
+
+      function loadFromLocalStorage() {
+        readmeEditor.setValue(localStorage.getItem(keyPrefix + "readme"));
+        sourceEditor.setValue(localStorage.getItem(keyPrefix + "source"));
+        htmlEditor.setValue(localStorage.getItem(keyPrefix + "html"));
+      }
+
       // Make contents shareable
       let clipboardTimer = null
       document.getElementById('option-create-snippet').addEventListener('click', async (evt) => {
@@ -818,6 +835,7 @@
           // console.log(code_challenge);
           let code_challenge = base64ArrayBuffer(digestBuffer);
           code_challenge = code_challenge.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+          saveToLocalStorage();
 
           // Redirect to GitLab for authorization
           window.location.href = `https://gitlab.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&state=${state}&scope=${scope}&code_challenge=${code_challenge}&code_challenge_method=S256`;
@@ -850,6 +868,7 @@
         else { // Returned from auth page
           // Cleanup sessionStorage
           window.sessionStorage.removeItem("code_verifier");
+          loadFromLocalStorage();
           const url = "https://gitlab.com/oauth/token";
           const paramsString = window.location.search;
           const searchParams = new URLSearchParams(paramsString);
